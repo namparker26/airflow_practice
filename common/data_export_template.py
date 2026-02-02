@@ -1,7 +1,9 @@
 from pyspark.sql import SparkSession
+import os 
+import sys
 
-
-db_path = "/Users/namnguyen/Documents/Documents on MacPro/Projects/Airflows/database.sqlite"
+db_path = f"{os.getcwd()}"
+# db_path = "/Users/namnguyen/Documents/Documents on MacPro/Projects/Airflows/database.sqlite"
 spark = (
     SparkSession.builder
     .appName("SoccerSQLite")
@@ -28,5 +30,5 @@ class SqliteDataObject():
         )
         return df
     def write_to_parquet(self):
-        output_path = f'/Users/namnguyen/Documents/Documents on MacPro/Projects/Airflows/data/{self.table_name}'
+        output_path = f'{db_path}/data/{self.table_name}'
         self.df.write.mode("overwrite").parquet(output_path)

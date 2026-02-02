@@ -1,5 +1,6 @@
 from pyspark.sql import SparkSession
 from pyspark.sql.types import *
+
 spark = (
     SparkSession.builder
     .appName("SoccerSourcing")
@@ -35,8 +36,8 @@ class SourcingColumn:
 class SourcingTable:
     def __init__(
             self,
-            volume_path, 
-            folder_name, 
+            volume_path,    ## volume path on databrick containing the parquet files
+            folder_name,    ## folder name containing the files
             target_schema_name, 
             target_table_name 
             ):
@@ -53,3 +54,8 @@ class SourcingTable:
         table_schema = df.schema
         return f"CREATE TABLE IF NOT EXISTS workspace.{self.target_schema_name}.{self.target_table_name} (\n" + \
                ",\n".join([SourcingColumn(i).generate_ddl_line() for i in table_schema.fields]) + ")"
+    def write_to_table(self):
+        df =self.read_file()
+        df.write.mode("overwrite").format("delta").saveAsTable(f'workspace.{self.target_schema_name}.{self.target_table_name}')
+
+
